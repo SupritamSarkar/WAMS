@@ -177,9 +177,6 @@ export function ReportsTab({ user }: { user: AppUser }) {
 // ─── Inventory Tab ────────────────────────────────────────────────────────────
 export function InventoryTab({ user }: { user: AppUser }) {
   const db = loadDb();
-  const isInv = user.role === "inventory_manager";
-  const isAdmin = user.role === "administrator";
-
   return (
     <div className="tabSection">
       <div className="statsRow">

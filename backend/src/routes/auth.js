@@ -3,20 +3,21 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || 'service-key';
-
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name, role = 'staff' } = req.body;
+    const { email, username, password, name, role = 'staff' } = req.body;
     const supabase = req.app.locals.supabase;
     
-    const { data: existing } = await supabase
+    const { data: existingByEmail } = await supabase
       .from('users')
       .select('id')
       .eq('email', email)
       .single();
+    const { data: existingByUsername } = username
+      ? await supabase.from('users').select('id').eq('username', username).single()
+      : { data: null };
     
-    if (existing) {
+    if (existingByEmail || existingByUsername) {
       return res.status(400).json({ error: 'User already exists' });
     }
     
@@ -24,7 +25,7 @@ router.post('/register', async (req, res) => {
     
     const { data, error } = await supabase
       .from('users')
-      .insert([{ email, password: hashedPassword, name, role }])
+      .insert([{ email, username, password: hashedPassword, name, role }])
       .select()
       .single();
     
@@ -40,13 +41,15 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, username, password } = req.body;
     const supabase = req.app.locals.supabase;
     
+    const identifierField = email ? 'email' : 'username';
+    const identifierValue = email || username;
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
-      .eq('email', email)
+      .eq(identifierField, identifierValue)
       .single();
     
     if (error || !user) {

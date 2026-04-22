@@ -66,10 +66,11 @@ router.put('/:id', async (req, res) => {
 router.patch('/:id/status', async (req, res) => {
   try {
     const supabase = req.app.locals.supabase;
-    const { status } = req.body;
+    const { status, payment_status, paid_date } = req.body;
+    const patch = { status, payment_status: payment_status || status, paid_date: paid_date || (status === 'paid' || payment_status === 'paid' ? new Date().toISOString().slice(0, 10) : undefined) };
     const { data, error } = await supabase
       .from('billing')
-      .update({ status })
+      .update(patch)
       .eq('id', req.params.id)
       .select()
       .single();

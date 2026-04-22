@@ -17,7 +17,7 @@ export function OrdersTab({
   onRefresh,
 }: {
   user: AppUser;
-  onRefresh: () => void;
+  onRefresh: () => Promise<void>;
 }) {
   const db = loadDb();
   const isDealer = user.role === "dealer";
@@ -32,49 +32,45 @@ export function OrdersTab({
     ? db.orders.filter((o) => o.dealerId === myDealer.id)
     : db.orders;
 
-  function submitOrder(e: FormEvent<HTMLFormElement>) {
+  async function submitOrder(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErr("");
     if (!myDealer) { setErr("No dealer profile found."); return; }
     const f = new FormData(e.currentTarget);
-    const partId = String(f.get("partId") || "");
-    const part = db.parts.find((p) => p.id === partId);
-    if (!part) { setErr("Select a valid part."); return; }
+    const productId = String(f.get("productId") || "");
+    const product = db.products.find((p) => p.id === productId);
+    if (!product) { setErr("Select a valid product."); return; }
     const qty = Number(f.get("quantity") || 1);
-    const result = placeOrder({
+    const result = await placeOrder({
       dealerId: myDealer.id,
-      dealerName: myDealer.name,
-      partId: part.id,
-      partName: part.name,
+      productId: product.id,
       quantity: qty,
-      unit_price: part.unit_price,
-      total_amount: qty * part.unit_price,
       delivery_address: String(f.get("delivery_address") || myDealer.address),
       notes: String(f.get("notes") || ""),
     });
     if (result.error) { setErr(result.error); return; }
     e.currentTarget.reset();
     setMsg("Order placed successfully! Awaiting confirmation.");
-    onRefresh();
+    await onRefresh();
   }
 
-  function advanceStatus(o: Order) {
+  async function advanceStatus(o: Order) {
     const flow: Order["status"][] = ["pending", "confirmed", "processing", "shipped", "delivered"];
     const next = flow[flow.indexOf(o.status) + 1];
-    if (next) { updateOrderStatus(o.id, next); onRefresh(); }
+    if (next) { await updateOrderStatus(o.id, next); await onRefresh(); }
   }
 
-  function cancelOrder(o: Order) {
+  async function cancelOrder(o: Order) {
     if (!confirm("Cancel this order?")) return;
-    updateOrderStatus(o.id, "cancelled");
-    onRefresh();
+    await updateOrderStatus(o.id, "cancelled");
+    await onRefresh();
   }
 
-  function doProcess(o: Order) {
-    const result = processOrder(o.id);
+  async function doProcess(o: Order) {
+    const result = await processOrder(o.id);
     if (result.error) { setErr(result.error); return; }
     setMsg(`Order processed. Invoice ${result.bill?.invoice_number} generated.`);
-    onRefresh();
+    await onRefresh();
   }
 
   const statusColors: Record<string, string> = {
@@ -91,13 +87,13 @@ export function OrdersTab({
       {isDealer && (
         <div className="panel">
           <h2>Place New Order</h2>
-          <p className="helperText">Select a part and quantity. We&apos;ll check stock availability.</p>
+          <p className="helperText">Select a product and quantity. We&apos;ll check stock availability.</p>
           {err && <p className="errorText">{err}</p>}
           {msg && <p className="successText">{msg}</p>}
           <form className="formGrid" onSubmit={submitOrder}>
-            <select name="partId" required>
-              <option value="">Select Part…</option>
-              {db.parts.filter((p) => p.quantity > 0).map((p) => (
+            <select name="productId" required>
+              <option value="">Select Product…</option>
+              {db.products.filter((p) => p.quantity > 0).map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} — ₹{p.unit_price.toLocaleString()} (Stock: {p.quantity})
                 </option>
@@ -122,7 +118,7 @@ export function OrdersTab({
               <thead>
                 <tr>
                   <th>Dealer</th>
-                  <th>Part</th>
+                  <th>Product</th>
                   <th>Qty</th>
                   <th>Total</th>
                   <th>Status</th>
@@ -134,7 +130,7 @@ export function OrdersTab({
                 {orders.map((o) => (
                   <tr key={o.id}>
                     <td>{o.dealerName}</td>
-                    <td>{o.partName}</td>
+                    <td>{o.productName}</td>
                     <td>{o.quantity}</td>
                     <td>₹{o.total_amount.toLocaleString()}</td>
                     <td>
@@ -175,7 +171,7 @@ export function BillingTab({
   onRefresh,
 }: {
   user: AppUser;
-  onRefresh: () => void;
+  onRefresh: () => Promise<void>;
 }) {
   const db = loadDb();
   const isAdmin = user.role === "administrator";
@@ -191,10 +187,10 @@ export function BillingTab({
   const totalRevenue = bills.filter((b) => b.payment_status === "paid").reduce((s, b) => s + b.total, 0);
   const totalUnpaid = bills.filter((b) => b.payment_status === "unpaid").reduce((s, b) => s + b.total, 0);
 
-  function markPaid(b: Bill) {
-    markBillPaid(b.id);
+  async function markPaid(b: Bill) {
+    await markBillPaid(b.id);
     setMsg(`Invoice ${b.invoice_number} marked as paid.`);
-    onRefresh();
+    await onRefresh();
   }
 
   const payColors: Record<string, string> = {
@@ -232,7 +228,7 @@ export function BillingTab({
                 <tr>
                   <th>Invoice #</th>
                   <th>Dealer</th>
-                  <th>Part</th>
+                  <th>Product</th>
                   <th>Qty</th>
                   <th>Subtotal</th>
                   <th>Tax (18%)</th>
