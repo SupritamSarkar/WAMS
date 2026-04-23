@@ -1,0 +1,183 @@
+{
+  "users": [
+    {
+      "id": "u-admin",
+      "email": "admin@wams.local",
+      "username": "admin",
+      "password": "$2a$10$deoEaegAv.eubxctqK819.JbGorXO48MVXXyqKePC8kzqdkv58z6a",
+      "name": "Admin User",
+      "role": "administrator",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    },
+    {
+      "id": "u-manager",
+      "email": "manager@wams.local",
+      "username": "inventory",
+      "password": "$2a$10$0v/CCLNYp3hH0He.YxvdQuoRBSLiTQuOKJa0eZefJ1q1Y/rdI3XEy",
+      "name": "Inventory Manager",
+      "role": "inventory_manager",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    },
+    {
+      "id": "u-supplier-1",
+      "email": "supplier1@wams.local",
+      "username": "supplier1",
+      "password": "$2a$10$9bgQfUQY.2v1w4a2mxVQsOiSCmO/wzw0vj.MuEVz7MabcsjWuXTZm",
+      "name": "Steel Works Ltd",
+      "role": "supplier",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    },
+    {
+      "id": "u-dealer-1",
+      "email": "dealer1@wams.local",
+      "username": "dealer1",
+      "password": "$2a$10$DwcqblfqOjqI/u3qzjaH3.v4PKtuINGNFapYuoC5GX3/z/ijD/l0m",
+      "name": "Metro Dealers",
+      "role": "dealer",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    }
+  ],
+  "dealers": [
+    {
+      "id": "d-1",
+      "name": "Metro Dealers",
+      "company_name": "Metro Automotive Pvt Ltd",
+      "email": "metro@dealer.com",
+      "phone": "+91-9876543210",
+      "address": "12 Industrial Road, Mumbai",
+      "status": "active",
+      "owner_user_id": "u-dealer-1",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": "s-1",
+      "name": "Steel Works Ltd",
+      "company_name": "Steel Works Manufacturing",
+      "email": "info@steelworks.com",
+      "phone": "+91-9123456789",
+      "address": "45 Factory Lane, Pune",
+      "status": "approved",
+      "owner_user_id": "u-supplier-1",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    }
+  ],
+  "parts": [
+    {
+      "id": "p-1",
+      "name": "Gear Unit",
+      "part_number": "GU-001",
+      "sku": "GU-001",
+      "description": "Heavy-duty gear unit for industrial machinery",
+      "category": "Mechanical",
+      "quantity": 20,
+      "min_quantity": 5,
+      "min_stock": 5,
+      "unit_price": 2500,
+      "supplier_id": "s-1",
+      "location": "Shelf A-1",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    },
+    {
+      "id": "p-2",
+      "name": "Hydraulic Pump",
+      "part_number": "HP-002",
+      "sku": "HP-002",
+      "description": "High-pressure hydraulic pump",
+      "category": "Hydraulics",
+      "quantity": 3,
+      "min_quantity": 5,
+      "min_stock": 5,
+      "unit_price": 8500,
+      "supplier_id": "s-1",
+      "location": "Shelf B-3",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-1",
+      "name": "Industrial Gearbox",
+      "sku": "IG-100",
+      "description": "Finished gearbox assembly",
+      "quantity": 8,
+      "min_quantity": 4,
+      "unit_price": 18000,
+      "unit": "pcs",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    },
+    {
+      "id": "prod-2",
+      "name": "Valve Controller",
+      "sku": "VC-200",
+      "description": "Controller unit for valve systems",
+      "quantity": 2,
+      "min_quantity": 6,
+      "unit_price": 24000,
+      "unit": "pcs",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    }
+  ],
+  "quotations": [
+    {
+      "id": "q-1",
+      "supplier_id": "s-1",
+      "part_id": "p-2",
+      "price": 7900,
+      "quantity": 10,
+      "delivery_date": "2026-04-22T20:55:42.167Z",
+      "valid_until": "2026-04-22T20:55:42.167Z",
+      "status": "pending",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    }
+  ],
+  "dealer_requests": [
+    {
+      "id": "req-1",
+      "dealer_id": "d-1",
+      "product_id": "prod-1",
+      "quantity": 2,
+      "notes": "Urgent delivery for workshop line A.",
+      "status": "pending",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    }
+  ],
+  "billing": [
+    {
+      "id": "bill-1",
+      "dealer_id": "d-1",
+      "invoice_number": "INV-1001",
+      "items": [
+        {
+          "product_id": "prod-1",
+          "quantity": 1,
+          "unit_price": 18000
+        }
+      ],
+      "total_amount": 18000,
+      "subtotal": 18000,
+      "tax": 0,
+      "total": 18000,
+      "payment_status": "unpaid",
+      "status": "pending",
+      "due_date": "2026-04-22T20:55:42.167Z",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "txn-1",
+      "product_id": "prod-1",
+      "dealer_id": "d-1",
+      "quantity": 1,
+      "unit_price": 18000,
+      "total_amount": 18000,
+      "status": "completed",
+      "transaction_type": "supply",
+      "created_at": "2026-04-22T20:55:42.167Z"
+    }
+  ],
+  "purchase_orders": [],
+  "stock_adjustments": []
+}

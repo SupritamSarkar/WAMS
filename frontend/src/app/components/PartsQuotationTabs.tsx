@@ -2,9 +2,9 @@
 import { FormEvent, useState } from "react";
 import {
   loadDb,
-  saveDb,
-  deleteItem,
-  updateItem,
+  createPart,
+  deletePart,
+  updatePartQuantity,
   submitQuotation,
   respondToQuotation,
   AppUser,
@@ -17,7 +17,7 @@ export function PartsTab({
   onRefresh,
 }: {
   user: AppUser;
-  onRefresh: () => void;
+  onRefresh: () => Promise<void>;
 }) {
   const db = loadDb();
   const isAdmin = user.role === "administrator";
@@ -25,61 +25,36 @@ export function PartsTab({
   const canManage = isAdmin || isInv;
   const [msg, setMsg] = useState("");
 
-  function addPart(e: FormEvent<HTMLFormElement>) {
+  async function addPart(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    const qty = Number(f.get("quantity") || 0);
-    const minStock = Number(f.get("min_stock") || 5);
-    const db2 = loadDb();
-    const newPart: Part = {
-      id: `p-${Date.now()}`,
+    await createPart({
       name: String(f.get("name") || ""),
       sku: String(f.get("sku") || `SKU-${Date.now()}`),
       description: String(f.get("description") || ""),
       category: String(f.get("category") || "General"),
       unit_price: Number(f.get("unit_price") || 0),
-      quantity: qty,
-      min_stock: minStock,
-      status: qty > minStock ? "in_stock" : qty > 0 ? "low_stock" : "out_of_stock",
-      createdAt: new Date().toISOString(),
-    };
-    db2.parts.unshift(newPart);
-    // Also add to inventory
-    db2.inventory.unshift({
-      id: `inv-${Date.now()}`,
-      partId: newPart.id,
-      partName: newPart.name,
-      sku: newPart.sku,
-      quantity: qty,
-      min_stock: minStock,
+      quantity: Number(f.get("quantity") || 0),
+      min_stock: Number(f.get("min_stock") || 5),
       location: String(f.get("location") || "TBD"),
-      last_updated: new Date().toISOString(),
     });
-    saveDb(db2);
     e.currentTarget.reset();
     setMsg("Part added to inventory.");
-    onRefresh();
+    await onRefresh();
   }
 
-  function removePart(p: Part) {
+  async function removePart(p: Part) {
     if (!confirm(`Delete part "${p.name}"?`)) return;
-    deleteItem("parts", p.id);
-    onRefresh();
+    await deletePart(p.id);
+    await onRefresh();
   }
 
-  function updateStock(p: Part) {
+  async function updateStock(p: Part) {
     const val = window.prompt("Enter new stock quantity:", String(p.quantity));
     if (val === null) return;
     const qty = Number(val);
-    updateItem("parts", p.id, {
-      quantity: qty,
-      status: qty > p.min_stock ? "in_stock" : qty > 0 ? "low_stock" : "out_of_stock",
-    });
-    const inv = db.inventory.find((i) => i.partId === p.id);
-    if (inv) {
-      updateItem("inventory", inv.id, { quantity: qty, last_updated: new Date().toISOString() });
-    }
-    onRefresh();
+    await updatePartQuantity(p.id, qty);
+    await onRefresh();
   }
 
   return (
@@ -155,7 +130,7 @@ export function QuotationsTab({
   onRefresh,
 }: {
   user: AppUser;
-  onRefresh: () => void;
+  onRefresh: () => Promise<void>;
 }) {
   const db = loadDb();
   const isAdmin = user.role === "administrator";
@@ -172,7 +147,7 @@ export function QuotationsTab({
     ? db.quotations.filter((q) => q.supplierId === mySupplier.id)
     : db.quotations;
 
-  function submitQuote(e: FormEvent<HTMLFormElement>) {
+  async function submitQuote(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!mySupplier) {
       setMsg("No supplier profile found for your account.");
@@ -187,27 +162,24 @@ export function QuotationsTab({
     }
     const qty = Number(f.get("quantity") || 1);
     const unitPrice = Number(f.get("unit_price") || 0);
-    submitQuotation({
+    await submitQuotation({
       supplierId: mySupplier.id,
-      supplierName: mySupplier.name,
       partId: part.id,
-      partName: part.name,
       quantity: qty,
       unit_price: unitPrice,
-      total_price: qty * unitPrice,
       validity_days: Number(f.get("validity_days") || 30),
       notes: String(f.get("notes") || ""),
     });
     e.currentTarget.reset();
     setMsg("Quotation submitted. Awaiting admin approval.");
-    onRefresh();
+    await onRefresh();
   }
 
-  function respond(qId: string, decision: "approved" | "rejected") {
+  async function respond(qId: string, decision: "approved" | "rejected") {
     const note = adminNote[qId] || "";
-    respondToQuotation(qId, decision, note);
+    await respondToQuotation(qId, decision, note);
     setMsg(`Quotation ${decision}.`);
-    onRefresh();
+    await onRefresh();
   }
 
   return (

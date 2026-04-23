@@ -1,45 +1,97 @@
 # WAMS - Web Based Automated Manufacturing System
 
-This repository contains a full-stack implementation of WAMS using:
+WAMS now runs as a fully local-first full-stack app with no Supabase dependency.
 
-- `frontend/`: Next.js 16 + React 19, dark-themed operations dashboard
-- `backend/`: Express API with manufacturing workflow endpoints
-- `supabase/`: SQL migration, RLS policies, and seed data
+Repository layout:
+- frontend/: Next.js 16 + React 19 dashboard UI
+- backend/: Express API running on local JSON storage
+- backend/data/local-db.json: seeded local datastore used by the backend
 
-## Quick Start
+## What changed
 
-1. Configure backend environment:
-   - Copy `backend/.env.example` to `backend/.env`
-2. Configure frontend environment:
-   - Copy `frontend/.env.example` to `frontend/.env.local`
-3. Install dependencies and run backend:
-   - `cd backend && npm install && npm run dev`
-4. Run frontend:
-   - `cd frontend && npm install && npm run dev`
+This repo was converted from a partially wired Supabase + local demo into a local development setup where:
+- backend data is stored in backend/data/local-db.json
+- frontend reads and writes through the local backend API
+- login, dealers, orders, billing, and inventory flows work without external services
 
-## Core Modules Implemented
+## Quick start
 
-- Authorization and password change
-- Dealers and suppliers management
-- Parts and products inventory
-- Quotations and purchase order confirmation
-- Dealer order processing, fulfillment, and billing
-- Transaction logging and report generation
-- Stock requirement analysis endpoint
+1. Start the backend
+   - cd backend
+   - npm install
+   - npm run dev
 
-## Supabase Setup
+2. Start the frontend
+   - cd frontend
+   - npm install
+   - npm run dev
 
-- Apply schema migration from `supabase/migrations/20260422_init_wams.sql`
-- Apply RLS policies from `supabase/policies.sql`
-- Seed demo records from `supabase/seed.sql`
+3. Open the app
+   - http://localhost:3000
 
-## Testing
+4. Check backend health
+   - http://localhost:5000/api/health
 
-- Backend tests:
-  - `cd backend && npm test`
-- Frontend lint:
-  - `cd frontend && npm run lint`
+## Demo accounts
 
-## Traceability
+Use these seeded local accounts:
+- admin / admin123
+- supplier1 / sup123
+- dealer1 / deal123
+- inventory / inv123
 
-See `docs/traceability-matrix.md` for SRS-to-code mapping and `docs/test-plan.md` for verification flows.
+## Local architecture
+
+Frontend:
+- Uses frontend/src/lib/localDb.ts as an API-backed client/cache layer
+- Syncs app state from the local backend and stores a browser cache for fast reloads
+
+Backend:
+- Uses backend/src/lib/localDb.js as a Supabase-like local query layer
+- Persists all changes to backend/data/local-db.json
+- Seeds the JSON file automatically on first run
+
+## Reset local data
+
+To reset the app to a fresh seeded state:
+- stop the backend
+- delete backend/data/local-db.json
+- restart the backend
+
+The file will be recreated automatically.
+
+## Main local flows supported
+
+- Authentication and password change
+- Dealer CRUD
+- Supplier CRUD and approval flow
+- Parts and product inventory management
+- Quotation submission and review
+- Dealer order creation and fulfillment
+- Billing generation and mark-paid flow
+- Transaction logging and reporting
+
+## Verification
+
+Backend automated tests:
+- cd backend && npm test
+
+Frontend production build:
+- cd frontend && npm run build
+
+Recommended local smoke check:
+1. Login as admin
+2. Create or update a dealer
+3. Place or fulfill an order
+4. Open Billing and mark an invoice paid
+5. Confirm changes persist in backend/data/local-db.json
+
+## Docs
+
+- docs/test-plan.md: local verification and smoke scenarios
+- docs/traceability-matrix.md: SRS/use-case to endpoint/UI mapping
+
+## Notes
+
+- next.config.js allows 127.0.0.1 as a dev origin for local browser testing
+- backend tests now cover auth, dealer CRUD, order fulfillment, and billing status updates

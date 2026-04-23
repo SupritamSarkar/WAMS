@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState, useCallback, useEffect } from "react";
-import { getSessionUser, login, logout, register, loadDb, generateReport, Role, AppUser } from "@/lib/localDb";
+import { getSessionUser, login, logout, register, loadDb, generateReport, syncFromBackend, Role, AppUser } from "@/lib/localDb";
 import { DealersTab, SuppliersTab } from "./components/DealerSupplierTabs";
 import { PartsTab, QuotationsTab } from "./components/PartsQuotationTabs";
 import { OrdersTab, BillingTab } from "./components/OrdersBillingTabs";
@@ -118,18 +118,18 @@ function AuthScreen({ onAuth }: { onAuth: (u: AppUser) => void }) {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [err, setErr] = useState("");
 
-  function handleLogin(e: FormEvent<HTMLFormElement>) {
+  async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    const user = login(String(f.get("username")), String(f.get("password")));
+    const user = await login(String(f.get("username")), String(f.get("password")));
     if (!user) { setErr("Invalid credentials. Try: admin / admin123"); return; }
     onAuth(user);
   }
 
-  function handleRegister(e: FormEvent<HTMLFormElement>) {
+  async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    const res = register({
+    const res = await register({
       name: String(f.get("name")),
       username: String(f.get("username")),
       password: String(f.get("password")),
@@ -200,11 +200,22 @@ export default function Home() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setSessionUser(getSessionUser());
-    setHydrated(true);
+    const init = async () => {
+      setSessionUser(getSessionUser());
+      try {
+        await syncFromBackend();
+      } catch {}
+      setHydrated(true);
+    };
+    init();
   }, []);
 
-  const refresh = useCallback(() => setTick((t) => t + 1), []);
+  const refresh = useCallback(async () => {
+    try {
+      await syncFromBackend();
+    } catch {}
+    setTick((t) => t + 1);
+  }, []);
 
   // Don't render anything until client-side hydration is done
   if (!hydrated) return null;

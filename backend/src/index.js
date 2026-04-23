@@ -3,15 +3,13 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const { createClient } = require("@supabase/supabase-js");
+const { createLocalClient, ensureDataFile, DATA_FILE } = require("./lib/localDb");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const supabaseUrl = process.env.SUPABASE_URL || "https://your-project.supabase.co";
-const supabaseKey =
-  process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || "your-anon-key";
-const supabase = createClient(supabaseUrl, supabaseKey);
+ensureDataFile();
+const supabase = createLocalClient();
 
 app.use(helmet());
 app.use(cors());
@@ -36,7 +34,7 @@ app.use("/api/inventory", require("./routes/inventory"));
 app.use("/api/purchase-orders", require("./routes/purchaseOrders"));
 
 app.get("/api/health", (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', mode: 'local', data_file: DATA_FILE, timestamp: new Date().toISOString() });
 });
 
 app.use((err, req, res, next) => {

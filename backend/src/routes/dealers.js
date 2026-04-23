@@ -33,10 +33,10 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const supabase = req.app.locals.supabase;
-    const { name, email, phone, address, company_name } = req.body;
+    const { name, email, phone, address, company_name, status = 'active' } = req.body;
     const { data, error } = await supabase
       .from('dealers')
-      .insert([{ name, email, phone, address, company_name }])
+      .insert([{ name, email, phone, address, company_name, status }])
       .select()
       .single();
     if (error) throw error;
@@ -49,10 +49,10 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const supabase = req.app.locals.supabase;
-    const { name, email, phone, address, company_name } = req.body;
+    const { name, email, phone, address, company_name, status } = req.body;
     const { data, error } = await supabase
       .from('dealers')
-      .update({ name, email, phone, address, company_name })
+      .update({ name, email, phone, address, company_name, status })
       .eq('id', req.params.id)
       .select()
       .single();
