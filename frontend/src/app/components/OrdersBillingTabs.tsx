@@ -36,7 +36,8 @@ export function OrdersTab({
     e.preventDefault();
     setErr("");
     if (!myDealer) { setErr("No dealer profile found."); return; }
-    const f = new FormData(e.currentTarget);
+    const formEl = e.currentTarget;
+    const f = new FormData(formEl);
     const productId = String(f.get("productId") || "");
     const product = db.products.find((p) => p.id === productId);
     if (!product) { setErr("Select a valid product."); return; }
@@ -49,7 +50,7 @@ export function OrdersTab({
       notes: String(f.get("notes") || ""),
     });
     if (result.error) { setErr(result.error); return; }
-    e.currentTarget.reset();
+    formEl.reset();
     setMsg("Order placed successfully! Awaiting confirmation.");
     await onRefresh();
   }

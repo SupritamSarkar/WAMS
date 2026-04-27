@@ -7,12 +7,6 @@ Repository layout:
 - backend/: Express API running on local JSON storage
 - backend/data/local-db.json: seeded local datastore used by the backend
 
-## What changed
-
-This repo was converted from a partially wired Supabase + local demo into a local development setup where:
-- backend data is stored in backend/data/local-db.json
-- frontend reads and writes through the local backend API
-- login, dealers, orders, billing, and inventory flows work without external services
 
 ## Quick start
 

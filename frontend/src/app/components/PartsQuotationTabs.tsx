@@ -27,7 +27,8 @@ export function PartsTab({
 
   async function addPart(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const f = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const f = new FormData(form);
     await createPart({
       name: String(f.get("name") || ""),
       sku: String(f.get("sku") || `SKU-${Date.now()}`),
@@ -38,7 +39,7 @@ export function PartsTab({
       min_stock: Number(f.get("min_stock") || 5),
       location: String(f.get("location") || "TBD"),
     });
-    e.currentTarget.reset();
+    form.reset();
     setMsg("Part added to inventory.");
     await onRefresh();
   }
@@ -149,11 +150,12 @@ export function QuotationsTab({
 
   async function submitQuote(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     if (!mySupplier) {
       setMsg("No supplier profile found for your account.");
       return;
     }
-    const f = new FormData(e.currentTarget);
+    const f = new FormData(form);
     const partId = String(f.get("partId") || "");
     const part = db.parts.find((p) => p.id === partId);
     if (!part) {
@@ -170,7 +172,7 @@ export function QuotationsTab({
       validity_days: Number(f.get("validity_days") || 30),
       notes: String(f.get("notes") || ""),
     });
-    e.currentTarget.reset();
+    form.reset();
     setMsg("Quotation submitted. Awaiting admin approval.");
     await onRefresh();
   }

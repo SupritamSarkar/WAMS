@@ -65,6 +65,16 @@
   ],
   "parts": [
     {
+      "name": "steel pipe",
+      "part_number": "SKU-1777281736613",
+      "description": "",
+      "quantity": 50,
+      "min_quantity": 10,
+      "unit_price": 3000,
+      "id": "p-1777281736623-0",
+      "created_at": "2026-04-27T09:22:16.623Z"
+    },
+    {
       "id": "p-1",
       "name": "Gear Unit",
       "part_number": "GU-001",
@@ -121,6 +131,64 @@
   ],
   "quotations": [
     {
+      "supplier_id": "s-1",
+      "part_id": "p-1777281736623-0",
+      "price": 1000,
+      "valid_until": "2026-05-27T09:29:10.938Z",
+      "status": "pending",
+      "id": "q-1777282150967-0",
+      "created_at": "2026-04-27T09:29:10.967Z"
+    },
+    {
+      "supplier_id": "s-1",
+      "part_id": "p-1",
+      "price": 1000,
+      "valid_until": "2026-05-23T08:47:54.265Z",
+      "status": "approved",
+      "id": "q-1776934074282-0",
+      "created_at": "2026-04-23T08:47:54.281Z",
+      "updated_at": "2026-04-23T08:48:22.899Z"
+    },
+    {
+      "supplier_id": "s-1",
+      "part_id": "p-1",
+      "price": 100,
+      "valid_until": "2026-05-23T08:46:19.364Z",
+      "status": "approved",
+      "id": "q-1776933979903-0",
+      "created_at": "2026-04-23T08:46:19.902Z",
+      "updated_at": "2026-04-23T08:48:24.282Z"
+    },
+    {
+      "supplier_id": "s-1",
+      "part_id": "p-1",
+      "price": 100,
+      "valid_until": "2026-05-23T08:46:19.140Z",
+      "status": "approved",
+      "id": "q-1776933979154-0",
+      "created_at": "2026-04-23T08:46:19.154Z",
+      "updated_at": "2026-04-23T08:48:25.601Z"
+    },
+    {
+      "supplier_id": "s-1",
+      "part_id": "p-1",
+      "price": 100,
+      "valid_until": "2026-05-23T08:45:59.121Z",
+      "status": "rejected",
+      "id": "q-1776933959147-0",
+      "created_at": "2026-04-23T08:45:59.147Z",
+      "updated_at": "2026-04-27T09:22:44.759Z"
+    },
+    {
+      "supplier_id": "s-1",
+      "part_id": "p-1",
+      "price": 100,
+      "valid_until": "2026-05-23T08:45:45.606Z",
+      "status": "pending",
+      "id": "q-1776933945611-0",
+      "created_at": "2026-04-23T08:45:45.611Z"
+    },
+    {
       "id": "q-1",
       "supplier_id": "s-1",
       "part_id": "p-2",
@@ -128,19 +196,57 @@
       "quantity": 10,
       "delivery_date": "2026-04-22T20:55:42.167Z",
       "valid_until": "2026-04-22T20:55:42.167Z",
-      "status": "pending",
-      "created_at": "2026-04-22T20:55:42.167Z"
+      "status": "approved",
+      "created_at": "2026-04-22T20:55:42.167Z",
+      "updated_at": "2026-04-23T07:32:27.838Z"
     }
   ],
   "dealer_requests": [
+    {
+      "dealer_id": "d-1",
+      "product_id": "prod-1",
+      "quantity": 100,
+      "status": "waiting_for_production",
+      "notes": "",
+      "id": "req-1777282429885-0",
+      "created_at": "2026-04-27T09:33:49.885Z"
+    },
+    {
+      "dealer_id": "d-1",
+      "product_id": "prod-2",
+      "quantity": 10,
+      "status": "waiting_for_production",
+      "notes": "kkkkk",
+      "id": "req-1777282030652-0",
+      "created_at": "2026-04-27T09:27:10.651Z"
+    },
+    {
+      "dealer_id": "d-1",
+      "product_id": "prod-2",
+      "quantity": 10,
+      "status": "waiting_for_production",
+      "notes": "kkkkk",
+      "id": "req-1777281888830-0",
+      "created_at": "2026-04-27T09:24:48.830Z"
+    },
+    {
+      "dealer_id": "d-1",
+      "product_id": "prod-1",
+      "quantity": 100,
+      "status": "waiting_for_production",
+      "notes": "sjx",
+      "id": "req-1776933884072-0",
+      "created_at": "2026-04-23T08:44:44.072Z"
+    },
     {
       "id": "req-1",
       "dealer_id": "d-1",
       "product_id": "prod-1",
       "quantity": 2,
       "notes": "Urgent delivery for workshop line A.",
-      "status": "pending",
-      "created_at": "2026-04-22T20:55:42.167Z"
+      "status": "cancelled",
+      "created_at": "2026-04-22T20:55:42.167Z",
+      "updated_at": "2026-04-23T07:32:20.515Z"
     }
   ],
   "billing": [
@@ -159,10 +265,12 @@
       "subtotal": 18000,
       "tax": 0,
       "total": 18000,
-      "payment_status": "unpaid",
-      "status": "pending",
+      "payment_status": "paid",
+      "status": "paid",
       "due_date": "2026-04-22T20:55:42.167Z",
-      "created_at": "2026-04-22T20:55:42.167Z"
+      "created_at": "2026-04-22T20:55:42.167Z",
+      "paid_date": "2026-04-23",
+      "updated_at": "2026-04-23T07:31:53.718Z"
     }
   ],
   "transactions": [
